@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardápio Digital | Burguer Supreme</title>
+  <style>
+    /* =========================================================
+       1. VARIÁVEIS DE CORES E TEMA
+       ========================================================= */
+    :root {
+      --bg-color: #121212;      
+      --card-bg: #1e1e1e;       
+      --accent: #ff4500;        
+      --accent-hover: #e03d00;  
+      --text-main: #ffffff;     
+      --text-muted: #a0a0a0;    
+      --success: #28a745;       
+      --danger: #dc3545;        
+      --badge-promo: #e67e22;   
+      --badge-new: #9b59b6;     
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
+
+    /* =========================================================
+       2. CABEÇALHO COM BANNER HORIZONTAL
+       ========================================================= */
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid #2a2a2a;
+      position: relative;
+    }
+
+    .header-banner {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .header-info {
+      padding: 16px;
+      text-align: center;
+      position: relative;
+    }
+
+    .logo-placeholder {
+      width: 80px;
+      height: 80px;
+      background-color: #333;
+      border-radius: 50%;
+      margin: -50px auto 10px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--accent);
+      border: 3px solid var(--card-bg);
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .logo-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+      font-weight: 800;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .status-open {
+      background-color: rgba(40, 167, 69, 0.2);
+      color: #2ecc71;
+      border: 1px solid #2ecc71;
+    }
+
+    .status-closed {
+      background-color: rgba(220, 53, 69, 0.2);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    /* =========================================================
+       3. NAVEGAÇÃO DE CATEGORIAS
+       ========================================================= */
+    nav {
+      background-color: var(--bg-color);
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 12px 16px;
+      gap: 10px;
+      border-bottom: 1px solid #2a2a2a;
+      scrollbar-width: none;
+    }
+
+    nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      padding: 8px 16px;
+      background-color: var(--card-bg);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    nav a.active {
+      background-color: var(--accent);
+      color: #fff;
+    }
+
+    /* =========================================================
+       4. ESTRUTURA DOS PRODUTOS
+       ========================================================= */
+    .container {
+      padding: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    section {
+      margin-bottom: 28px;
+      scroll-margin-top: 60px;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      margin-bottom: 14px;
+      color: var(--text-main);
+      border-left: 4px solid var(--accent);
+      padding-left: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .item-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    .item-image {
+      width: 100%;
+      height: 180px;
+      background-color: #2a2a2a;
+      object-fit: cover;
+      display: block;
+    }
+
+    .item-content {
+      padding: 14px;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .item-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .badges {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 2;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .badge-highlight { background-color: var(--accent); }
+    .badge-promo { background-color: var(--badge-promo); }
+    .badge-new { background-color: var(--badge-new); }
+
+    .item-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .item-price {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-add {
+      background-color: var(--accent);
+      color: #fff;
+    }
+
+    .btn-add:active {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-quick {
+      background-color: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    /* =========================================================
+       5. BOTÃO FLUTUANTE
+       ========================================================= */
+    .cart-float {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 568px;
+      background-color: var(--accent);
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(255, 69, 0, 0.4);
+      cursor: pointer;
+      z-index: 200;
+      font-weight: bold;
+    }
+
+    .cart-badge {
+      background-color: #fff;
+      color: var(--accent);
+      border-radius: 50%;
+      padding: 2px 8px;
+      font-size: 0.85rem;
+      margin-left: 6px;
+    }
+
+    /* =========================================================
+       6. MODAL DO CARRINHO E FORMULÁRIO DE ENTREGA
+       ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 300;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 10px;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-title {
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .cart-item-price {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: #2a2a2a;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .qty-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      width: 24px;
+    }
+
+    .form-section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 18px 0 10px 0;
+      border-bottom: 1px solid #333;
+      padding-bottom: 4px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .form-row .form-input {
+      flex: 1;
+    }
+
+    .form-input, .form-select, .obs-input {
+      width: 100%;
+      background-color: #2a2a2a;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .form-input:focus, .form-select:focus, .obs-input:focus {
+      outline: 1px solid var(--accent);
+    }
+
+    .obs-input {
+      resize: none;
+    }
+
+    .troco-box {
+      display: none;
+      background-color: #252525;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px dashed #444;
+      margin-top: 6px;
+    }
+
+    .troco-options {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+
+    .cart-summary {
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+
+    .cart-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .cart-total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 10px;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    .btn-whatsapp {
+      width: 100%;
+      background-color: #25d366;
+      color: #fff;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABEÇALHO -->
+  <header>
+    <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200" alt="Banner Burguer Supreme" class="header-banner" id="header-banner" />
+    <div class="header-info">
+      <div class="logo-placeholder" id="logo-container">BURG</div>
+      <h1 id="rest-name">Carregando...</h1>
+      <div id="status-badge" class="status-badge">Verificando...</div>
+    </div>
+  </header>
+
+  <!-- NAVEGAÇÃO -->
+  <nav id="category-nav"></nav>
+
+  <!-- LISTA DE PRODUTOS -->
+  <div class="container" id="menu-container"></div>
+
+  <!-- BOTÃO FLUTUANTE -->
+  <div class="cart-float" id="cart-float" onclick="toggleCartModal(true)">
+    <span>Ver Carrinho <span class="cart-badge" id="cart-count">0</span></span>
+    <span id="cart-total-float">R$ 0,00</span>
+  </div>
+
+  <!-- MODAL DO CARRINHO -->
+  <div class="modal-overlay" id="cart-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Seu Pedido</h2>
+        <button class="btn-close" onclick="toggleCartModal(false)">&times;</button>
+      </div>
+
+      <!-- ITENS DO CARRINHO -->
+      <div id="cart-items-container"></div>
+
+      <!-- DADOS DE ENTREGA -->
+      <div id="checkout-form" style="display: none;">
+        <div class="form-section-title">📍 Dados para Entrega</div>
+        <div class="form-group">
+          <input type="text" id="client-name" class="form-input" placeholder="Seu Nome completo *" />
+          
+          <div class="form-row">
+            <input type="text" id="client-street" class="form-input" placeholder="Rua / Avenida *" />
+            <input type="text" id="client-number" class="form-input" style="max-width: 90px;" placeholder="Nº *" />
+          </div>
+
+          <div class="form-row">
+            <input type="text" id="client-neighborhood" class="form-input" placeholder="Bairro *" />
+          </div>
+
+          <input type="text" id="client-reference" class="form-input" placeholder="Ponto de referência (opcional)" />
+        </div>
+
+        <div class="form-section-title">💳 Forma de Pagamento</div>
+        <div class="form-group">
+          <select id="payment-method" class="form-select" onchange="handlePaymentChange()">
+            <option value="">Selecione a forma de pagamento *</option>
+            <option value="Pix">Pix</option>
+            <option value="Cartão de Crédito/Débito">Cartão de Crédito/Débito</option>
+            <option value="Dinheiro">Dinheiro</option>
+          </select>
+
+          <!-- BOX DE TROCO -->
+          <div id="troco-box" class="troco-box">
+            <div class="troco-options">
+              <label><input type="radio" name="precisa_troco" value="Nao" checked onclick="toggleTrocoInput(false)"> Não preciso de troco</label>
+              <label><input type="radio" name="precisa_troco" value="Sim" onclick="toggleTrocoInput(true)"> Preciso de troco</label>
+            </div>
+            <input type="number" id="troco-value" class="form-input" placeholder="Troco para quanto? (ex: 50)" style="display: none;" />
+          </div>
+        </div>
+
+        <div class="form-section-title">📝 Observações</div>
+        <textarea class="obs-input" id="cart-obs" rows="2" placeholder="Ex: Sem cebola, pão bem selado, ponto da carne..."></textarea>
+      </div>
+
+      <!-- RESUMO DE VALORES -->
+      <div class="cart-summary">
+        <div class="cart-row">
+          <span>Subtotal:</span>
+          <span id="modal-subtotal">R$ 0,00</span>
+        </div>
+        <div class="cart-row">
+          <span>Taxa de Entrega:</span>
+          <span id="modal-delivery">R$ 3,00</span>
+        </div>
+        <div class="cart-total-row">
+          <span>Total:</span>
+          <span id="modal-total">R$ 0,00</span>
+        </div>
+        <button class="btn-whatsapp" onclick="checkoutWhatsApp()">Enviar Pedido no WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==============================================================================
+       1. CONFIGURAÇÕES BÁSICAS
+       ============================================================================== */
+    const CONFIG = {
+      nome: "Burguer Supreme",
+      whatsapp: "5583993228124",
+      horarioAbertura: "18:00",
+      horarioFechamento: "23:30",
+      taxaEntrega: 3.00,
+      bannerUrl: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=1200",
+      logoUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150" 
+    };
+
+    /* ==============================================================================
+       2. BANCO DE DADOS DOS PRODUTOS
+       ============================================================================== */
+    const MENU = [
+      {
+        id: "d1",
+        nome: "Supreme Bacon Double",
+        descricao: "Dois hambúrgueres de 160g, muito bacon crocante, queijo cheddar fatiado e molho especial no pão brioche.",
+        preco: 34.50,
+        categoria: "destaques",
+        selo: "mais pedido",
+        foto: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600"
+      },
+      {
+        id: "d2",
+        nome: "Trufado Especial",
+        descricao: "Hambúrguer de 180g, maionese de trufas brancas, queijo brie derretido e rúcula fresca.",
+        preco: 38.90,
+        categoria: "destaques",
+        selo: "mais pedido",
+        foto: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600"
+      },
+      {
+        id: "h1",
+        nome: "Smash Cheeseburger",
+        descricao: "Hambúrguer prensado de 90g, crosta perfeita, queijo prato derretido e maionese da casa.",
+        preco: 22.50,
+        categoria: "hamburgueres",
+        selo: "promocao",
+        foto: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600"
+      },
+      {
+        id: "h2",
+        nome: "Chicken Crispy",
+        descricao: "Sobrecoxa de frango empanada super crocante, alface americana, picles e maionese verde.",
+        preco: 28.00,
+        categoria: "hamburgueres",
+        selo: "novidade",
+        foto: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=600"
+      },
+      {
+        id: "e1",
+        nome: "Batata com Cheddar & Bacon",
+        descricao: "Porção de batatas onduladas crocantes cobertas com creme de cheddar e farofa de bacon.",
+        preco: 18.50,
+        categoria: "entradas",
+        selo: null,
+        foto: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600"
+      },
+      {
+        id: "e2",
+        nome: "Onion Rings",
+        descricao: "Anéis de cebola empanados e fritos, acompanhados de molho barbecue artesanal.",
+        preco: 15.50,
+        categoria: "entradas",
+        selo: null,
+        foto: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=600"
+      },
+      {
+        id: "b1",
+        nome: "Coca-Cola Zero 350ml",
+        descricao: "Lata trincando de gelada.",
+        preco: 6.50,
+        categoria: "bebidas",
+        selo: null,
+        foto: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600"
+      },
+      {
+        id: "s1",
+        nome: "Milkshake de Nutella 400ml",
+        descricao: "Milkshake cremoso feito com sorvete de baunilha e Nutella pura.",
+        preco: 19.90,
+        categoria: "sobremesas",
+        selo: "novidade",
+        foto: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600"
+      }
+    ];
+
+    const CATEGORIAS = [
+      { id: "destaques", nome: "🔥 Destaques da Casa" },
+      { id: "hamburgueres", nome: "🍔 Hambúrgueres" },
+      { id: "entradas", nome: "🍟 Entradas" },
+      { id: "bebidas", nome: "🥤 Bebidas" },
+      { id: "sobremesas", nome: "🍨 Sobremesas" }
+    ];
+
+    /* ==============================================================================
+       3. INICIALIZAÇÃO
+       ============================================================================== */
+    let cart = JSON.parse(localStorage.getItem('cart_items')) || {};
+
+    function formatMoney(amount) {
+      return amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function init() {
+      document.getElementById('rest-name').innerText = CONFIG.nome;
+
+      if (CONFIG.bannerUrl) {
+        document.getElementById('header-banner').src = CONFIG.bannerUrl;
+      }
+      if (CONFIG.logoUrl) {
+        document.getElementById('logo-container').innerHTML = `<img src="${CONFIG.logoUrl}" alt="${CONFIG.nome}">`;
+      }
+
+      document.getElementById('modal-delivery').innerText = formatMoney(CONFIG.taxaEntrega);
+
+      checkStatus();
+      renderNav();
+      renderMenu();
+      updateCartUI();
+    }
+
+    /* ==============================================================================
+       4. HORÁRIO E NAVEGAÇÃO
+       ============================================================================== */
+    function checkStatus() {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      const [hA, mA] = CONFIG.horarioAbertura.split(':').map(Number);
+      const [hF, mF] = CONFIG.horarioFechamento.split(':').map(Number);
+
+      const openMinutes = hA * 60 + mA;
+      const closeMinutes = hF * 60 + mF;
+
+      const isOpen = currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
+      const statusEl = document.getElementById('status-badge');
+
+      if (isOpen) {
+        statusEl.innerText = `Aberto agora • Fecha às ${CONFIG.horarioFechamento}`;
+        statusEl.className = 'status-badge status-open';
+      } else {
+        statusEl.innerText = `Fechado • Abre às ${CONFIG.horarioAbertura}`;
+        statusEl.className = 'status-badge status-closed';
+      }
+    }
+
+    function renderNav() {
+      const navEl = document.getElementById('category-nav');
+      navEl.innerHTML = CATEGORIAS.map((cat, index) => 
+        `<a href="#${cat.id}" class="${index === 0 ? 'active' : ''}" onclick="setActiveNav(this)">${cat.nome}</a>`
+      ).join('');
+    }
+
+    function setActiveNav(el) {
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function renderMenu() {
+      const container = document.getElementById('menu-container');
+      
+      container.innerHTML = CATEGORIAS.map(cat => {
+        const items = MENU.filter(item => item.categoria === cat.id);
+        if (items.length === 0) return '';
+
+        return `
+          <section id="${cat.id}">
+            <h2 class="section-title">${cat.nome}</h2>
+            ${items.map(item => renderItemCard(item)).join('')}
+          </section>
+        `;
+      }).join('');
+    }
+
+    function renderItemCard(item) {
+      let badgeHtml = '';
+      if (item.selo === 'mais pedido') badgeHtml = `<span class="badge badge-highlight">Mais Pedido</span>`;
+      else if (item.selo === 'promocao') badgeHtml = `<span class="badge badge-promo">Promoção</span>`;
+      else if (item.selo === 'novidade') badgeHtml = `<span class="badge badge-new">Novidade</span>`;
+
+      return `
+        <div class="item-card">
+          ${badgeHtml ? `<div class="badges">${badgeHtml}</div>` : ''}
+          <img src="${item.foto}" alt="${item.nome}" class="item-image" loading="lazy" />
+          <div class="item-content">
+            <div class="item-header">
+              <h3 class="item-title">${item.nome}</h3>
+            </div>
+            <p class="item-desc">${item.descricao}</p>
+            <div class="item-footer">
+              <span class="item-price">${formatMoney(item.preco)}</span>
+              <div class="btn-group">
+                <button class="btn btn-quick" onclick="quickOrder('${item.id}')">Pedir só esse</button>
+                <button class="btn btn-add" onclick="addToCart('${item.id}')">+ Adicionar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==============================================================================
+       5. CARRINHO DE COMPRAS
+       ============================================================================== */
+    function addToCart(itemId) {
+      if (cart[itemId]) {
+        cart[itemId]++;
+      } else {
+        cart[itemId] = 1;
+      }
+      saveCart();
+      updateCartUI();
+    }
+
+    function updateQuantity(itemId, change) {
+      if (cart[itemId]) {
+        cart[itemId] += change;
+        if (cart[itemId] <= 0) {
+          delete cart[itemId];
+        }
+      }
+      saveCart();
+      updateCartUI();
+    }
+
+    function saveCart() {
+      localStorage.setItem('cart_items', JSON.stringify(cart));
+    }
+
+    function calculateSubtotal() {
+      return Object.keys(cart).reduce((sum, itemId) => {
+        const item = MENU.find(m => m.id === itemId);
+        return sum + (item ? item.preco * cart[itemId] : 0);
+      }, 0);
+    }
+
+    function updateCartUI() {
+      const totalCount = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+      const subtotal = calculateSubtotal();
+      const grandTotal = subtotal > 0 ? subtotal + CONFIG.taxaEntrega : 0;
+
+      document.getElementById('cart-count').innerText = totalCount;
+      document.getElementById('cart-total-float').innerText = formatMoney(grandTotal);
+      document.getElementById('cart-float').style.display = totalCount > 0 ? 'flex' : 'none';
+
+      document.getElementById('modal-subtotal').innerText = formatMoney(subtotal);
+      document.getElementById('modal-total').innerText = formatMoney(grandTotal);
+      
+      const formEl = document.getElementById('checkout-form');
+      if (totalCount > 0) {
+        formEl.style.display = 'block';
+      } else {
+        formEl.style.display = 'none';
+      }
+
+      renderCartItems();
+    }
+
+    function renderCartItems() {
+      const container = document.getElementById('cart-items-container');
+      const itemKeys = Object.keys(cart);
+
+      if (itemKeys.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px 0;">Seu carrinho está vazio.</p>';
+        return;
+      }
+
+      container.innerHTML = itemKeys.map(itemId => {
+        const item = MENU.find(m => m.id === itemId);
+        if (!item) return '';
+        
+        return `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <div class="cart-item-title">${item.nome}</div>
+              <div class="cart-item-price">${formatMoney(item.preco * cart[itemId])}</div>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQuantity('${itemId}', -1)">-</button>
+              <span>${cart[itemId]}</span>
+              <button class="qty-btn" onclick="updateQuantity('${itemId}', 1)">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleCartModal(show) {
+      const modal = document.getElementById('cart-modal');
+      modal.classList.toggle('active', show);
+    }
+
+    /* ==============================================================================
+       6. LÓGICA DO PAGAMENTO E TROCO
+       ============================================================================== */
+    function handlePaymentChange() {
+      const method = document.getElementById('payment-method').value;
+      const trocoBox = document.getElementById('troco-box');
+      
+      if (method === 'Dinheiro') {
+        trocoBox.style.display = 'block';
+      } else {
+        trocoBox.style.display = 'none';
+      }
+    }
+
+    function toggleTrocoInput(show) {
+      const input = document.getElementById('troco-value');
+      input.style.display = show ? 'block' : 'none';
+      if (!show) input.value = '';
+    }
+
+    /* ==============================================================================
+       7. ENVIAR PEDIDO COM DADOS COMPLETOS PARA O WHATSAPP
+       ============================================================================== */
+    function checkoutWhatsApp() {
+      const itemKeys = Object.keys(cart);
+      if (itemKeys.length === 0) {
+        alert('Seu carrinho está vazio!');
+        return;
+      }
+
+      const name = document.getElementById('client-name').value.trim();
+      const street = document.getElementById('client-street').value.trim();
+      const number = document.getElementById('client-number').value.trim();
+      const neighborhood = document.getElementById('client-neighborhood').value.trim();
+      const reference = document.getElementById('client-reference').value.trim();
+      const paymentMethod = document.getElementById('payment-method').value;
+
+      if (!name || !street || !number || !neighborhood) {
+        alert('Por favor, preencha todos os campos obrigatórios do endereço (Nome, Rua, Número e Bairro).');
+        return;
+      }
+
+      if (!paymentMethod) {
+        alert('Por favor, selecione a forma de pagamento.');
+        return;
+      }
+
+      let paymentDetail = paymentMethod;
+      if (paymentMethod === 'Dinheiro') {
+        const precisaTroco = document.querySelector('input[name="precisa_troco"]:checked').value;
+        if (precisaTroco === 'Sim') {
+          const trocoValue = document.getElementById('troco-value').value.trim();
+          if (!trocoValue) {
+            alert('Informe para quanto valor você precisa de troco.');
+            return;
+          }
+          paymentDetail += ` (Troco para R$ ${trocoValue})`;
+        } else {
+          paymentDetail += ` (Sem troco)`;
+        }
+      }
+
+      const itemsListText = itemKeys.map(itemId => {
+        const item = MENU.find(m => m.id === itemId);
+        return `• ${cart[itemId]}x ${item.nome} (${formatMoney(item.preco * cart[itemId])})`;
+      }).join('\n');
+
+      const subtotal = calculateSubtotal();
+      const grandTotal = subtotal + CONFIG.taxaEntrega;
+      const obs = document.getElementById('cart-obs').value.trim();
+
+      let message = `*NOVO PEDIDO - ${CONFIG.nome}*\n\n`;
+      message += `*CLIENTE:* ${name}\n`;
+      message += `*ENDEREÇO DE ENTREGA:*\n`;
+      message += `${street}, Nº ${number} - Bairro: ${neighborhood}\n`;
+      if (reference) message += `Ref: ${reference}\n`;
+      message += `\n*ITENS DO PEDIDO:*\n${itemsListText}\n\n`;
+      if (obs) message += `*Observações:* ${obs}\n\n`;
+      message += `*FORMA DE PAGAMENTO:* ${paymentDetail}\n\n`;
+      message += `-----------------------------\n`;
+      message += `Subtotal: ${formatMoney(subtotal)}\n`;
+      message += `Taxa de Entrega: ${formatMoney(CONFIG.taxaEntrega)}\n`;
+      message += `*TOTAL: ${formatMoney(grandTotal)}*`;
+
+      const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+
+    function quickOrder(itemId) {
+      const item = MENU.find(m => m.id === itemId);
+      if (!item) return;
+
+      const grandTotal = item.preco + CONFIG.taxaEntrega;
+      const message = `Olá! Gostaria de pedir:\n1x ${item.nome} (${formatMoney(item.preco)})\nEntrega: ${formatMoney(CONFIG.taxaEntrega)}\nTotal: ${formatMoney(grandTotal)}`;
+      const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`;
+
+      window.open(url, '_blank');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
