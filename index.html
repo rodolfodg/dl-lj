@@ -567,7 +567,8 @@
               <label><input type="radio" name="precisa_troco" value="Nao" checked onclick="toggleTrocoInput(false)"> Não preciso de troco</label>
               <label><input type="radio" name="precisa_troco" value="Sim" onclick="toggleTrocoInput(true)"> Preciso de troco</label>
             </div>
-            <input type="number" id="troco-value" class="form-input" placeholder="Troco para quanto? (ex: 50)" style="display: none;" />
+            <!-- INPUT ALTERADO PARA TYPE="TEXT" PARA PERMITIR VÍRGULA E TEXTO -->
+            <input type="text" id="troco-value" class="form-input" placeholder="Troco para quanto? (ex: 100,00)" style="display: none;" />
           </div>
         </div>
 
@@ -892,6 +893,31 @@
       modal.classList.toggle('active', show);
     }
 
+    function clearCartAndForm() {
+      cart = {};
+      saveCart();
+      
+      document.getElementById('client-name').value = '';
+      document.getElementById('client-street').value = '';
+      document.getElementById('client-number').value = '';
+      document.getElementById('client-neighborhood').value = '';
+      document.getElementById('client-reference').value = '';
+      document.getElementById('payment-method').value = '';
+      document.getElementById('cart-obs').value = '';
+      
+      const trocoBox = document.getElementById('troco-box');
+      if (trocoBox) trocoBox.style.display = 'none';
+      
+      const trocoVal = document.getElementById('troco-value');
+      if (trocoVal) {
+        trocoVal.value = '';
+        trocoVal.style.display = 'none';
+      }
+
+      updateCartUI();
+      toggleCartModal(false);
+    }
+
     /* ==============================================================================
        6. LÓGICA DO PAGAMENTO E TROCO
        ============================================================================== */
@@ -939,16 +965,29 @@
         return;
       }
 
+      const subtotal = calculateSubtotal();
+      const grandTotal = subtotal + CONFIG.taxaEntrega;
+
       let paymentDetail = paymentMethod;
       if (paymentMethod === 'Dinheiro') {
         const precisaTroco = document.querySelector('input[name="precisa_troco"]:checked').value;
         if (precisaTroco === 'Sim') {
-          const trocoValue = document.getElementById('troco-value').value.trim();
-          if (!trocoValue) {
+          const trocoRaw = document.getElementById('troco-value').value.trim();
+          if (!trocoRaw) {
             alert('Informe para quanto valor você precisa de troco.');
             return;
           }
-          paymentDetail += ` (Troco para R$ ${trocoValue})`;
+
+          // Trata o texto digitado limpando caracteres e trocando vírgula por ponto
+          const valorPago = parseFloat(trocoRaw.replace(/[^\d,\.]/g, '').replace(',', '.'));
+
+          if (isNaN(valorPago) || valorPago < grandTotal) {
+            alert(`O valor para troco deve ser maior ou igual ao total do pedido (${formatMoney(grandTotal)}).`);
+            return;
+          }
+
+          const valorTroco = valorPago - grandTotal;
+          paymentDetail += ` (Levar ${formatMoney(valorTroco)} de troco para ${formatMoney(valorPago)})`;
         } else {
           paymentDetail += ` (Sem troco)`;
         }
@@ -959,8 +998,6 @@
         return `• ${cart[itemId]}x ${item.nome} (${formatMoney(item.preco * cart[itemId])})`;
       }).join('\n');
 
-      const subtotal = calculateSubtotal();
-      const grandTotal = subtotal + CONFIG.taxaEntrega;
       const obs = document.getElementById('cart-obs').value.trim();
 
       let message = `*NOVO PEDIDO - ${CONFIG.nome}*\n\n`;
@@ -978,17 +1015,13 @@
 
       const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
+
+      clearCartAndForm();
     }
 
     function quickOrder(itemId) {
-      const item = MENU.find(m => m.id === itemId);
-      if (!item) return;
-
-      const grandTotal = item.preco + CONFIG.taxaEntrega;
-      const message = `Olá! Gostaria de pedir:\n1x ${item.nome} (${formatMoney(item.preco)})\nEntrega: ${formatMoney(CONFIG.taxaEntrega)}\nTotal: ${formatMoney(grandTotal)}`;
-      const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`;
-
-      window.open(url, '_blank');
+      addToCart(itemId);
+      toggleCartModal(true);
     }
 
     document.addEventListener('DOMContentLoaded', init);
