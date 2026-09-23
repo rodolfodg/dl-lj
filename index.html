@@ -31,6 +31,9 @@
       background-color: var(--bg-light);
       color: var(--dark);
       padding-bottom: 90px;
+      width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
     }
 
     /* CABEÇALHO COM BANNER E PERFIL */
@@ -45,7 +48,6 @@
 
     .banner-container {
       width: 100%;
-      height: clamp(220px, 34vw, 430px);
       background: #ffffff;
       display: flex;
       justify-content: center;
@@ -53,22 +55,24 @@
       padding: 0;
       margin: 0;
       overflow: hidden;
+      line-height: 0;
     }
 
     .header-banner-img {
       display: block;
       width: 100%;
-      height: 100%;
-      max-width: none;
+      height: auto;
+      max-width: 100%;
       max-height: none;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center;
     }
 
     .profile-logo-container {
-      margin-top: -42px;
+      margin-top: -48px;
       display: flex;
       justify-content: center;
+      align-items: center;
       position: relative;
       z-index: 2;
     }
@@ -86,14 +90,19 @@
     }
 
     .header-info {
-      padding: 8px 15px 0 15px;
+      width: 100%;
+      padding: 8px 12px 16px;
+      text-align: center;
     }
 
     .store-title {
       color: var(--primary);
-      font-size: 1.25rem;
+      font-size: clamp(1.05rem, 3.5vw, 1.5rem);
+      line-height: 1.2;
       font-weight: 800;
-      margin-top: 4px;
+      margin: 4px auto 0;
+      max-width: 95%;
+      text-align: center;
     }
 
     .status-badge {
@@ -465,37 +474,19 @@
     }
 
     @media (max-width: 700px) {
-      .nav-categories {
-        justify-content: flex-start;
-        padding: 10px 12px;
-        gap: 7px;
-      }
-
-      .cat-btn {
-        padding: 9px 14px;
-        font-size: 0.82rem;
-      }
-
-      .container {
-        width: 100%;
-        max-width: 600px;
-        padding: 12px;
-        margin: 0 auto;
-      }
-
       .banner-container {
-        height: 210px;
+        width: 100%;
         padding: 0;
       }
 
       .header-banner-img {
         width: 100%;
-        height: 100%;
-        object-fit: cover;
+        height: auto;
+        object-fit: contain;
       }
 
       .profile-logo-container {
-        margin-top: -32px;
+        margin-top: -38px;
       }
 
       .profile-logo-img {
@@ -504,18 +495,69 @@
         border-width: 3px;
       }
 
+      .header-info {
+        padding: 8px 10px 14px;
+      }
+
+      .store-title {
+        font-size: 1.12rem;
+        line-height: 1.25;
+        margin-top: 3px;
+      }
+
+      .status-badge,
+      .delivery-badge {
+        max-width: 94%;
+        font-size: 0.78rem;
+        line-height: 1.25;
+      }
+
+      .nav-categories {
+        justify-content: flex-start;
+        width: 100%;
+        padding: 9px 10px;
+        gap: 7px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        touch-action: pan-x;
+      }
+
+      .cat-btn {
+        flex: 0 0 auto;
+        padding: 9px 14px;
+        font-size: 0.82rem;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 12px;
+      }
+
+      .category-title {
+        font-size: 1.05rem;
+        margin-top: 18px;
+      }
+
       .product-card {
         width: 100%;
         gap: 8px;
+        padding: 11px 12px;
       }
 
       .product-info {
         min-width: 0;
-        padding-right: 4px;
+        padding-right: 3px;
       }
 
       .product-name {
         line-height: 1.25;
+        overflow-wrap: anywhere;
+      }
+
+      .product-desc {
+        line-height: 1.3;
       }
 
       .add-btn {
@@ -525,7 +567,7 @@
       }
 
       .floating-cart {
-        padding: 9px 12px;
+        padding: 9px 10px;
         gap: 8px;
       }
 
@@ -536,6 +578,7 @@
       }
 
       .modal-content {
+        width: calc(100% - 20px);
         max-width: 100%;
         max-height: 94vh;
         padding: 16px;
@@ -548,47 +591,41 @@
     }
 
     @media (max-width: 400px) {
-      .store-title {
-        font-size: 1.05rem;
-      }
-
-      .banner-container {
-        height: 175px;
-        padding: 0;
-      }
-
-      .header-banner-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
       .profile-logo-container {
-        margin-top: -27px;
+        margin-top: -32px;
       }
 
       .profile-logo-img {
-        width: 66px;
-        height: 66px;
+        width: 68px;
+        height: 68px;
+      }
+
+      .store-title {
+        font-size: 1.02rem;
+      }
+
+      .status-badge,
+      .delivery-badge {
+        font-size: 0.73rem;
+        padding: 5px 10px;
+      }
+
+      .nav-categories {
+        padding: 8px 8px;
       }
 
       .cat-btn {
         padding: 8px 12px;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
       }
 
       .floating-cart {
-        padding: 8px 10px;
-      }
-
-      .cart-icon-wrapper {
-        width: 38px;
-        height: 38px;
+        padding: 8px;
       }
 
       .checkout-btn {
         padding: 9px 10px;
-        font-size: 0.75rem;
+        font-size: 0.74rem;
       }
     }
   </style>
